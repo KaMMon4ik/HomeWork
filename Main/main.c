@@ -21,5 +21,6 @@ void main() {
     puts("                      `--..____..--'");
 
 	getchar();
+    return 3;
 
 }
