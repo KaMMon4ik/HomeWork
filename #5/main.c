@@ -1,5 +1,6 @@
 #include <locale.h>
 #include <stdio.h>
+#include <math.h>
 
 // Вариант 7
 
@@ -7,17 +8,17 @@ void main() {
 
     setlocale(LC_ALL, "RUS");
 
-    int n, sum = 0;
+    double x, y, z, gamma;
 
-    printf("Введите число N\n");
-    scanf("%d", &n);
+    printf("Введите x\n");
+    scanf("%lf", &x);
+    printf("Введите y\n");
+    scanf("%lf", &y);
+    printf("Введите z\n");
+    scanf("%lf", &z);
 
-    while (n>0) {
-        sum+=n%10;
-        n/=10;
-    }
+    gamma=5*atan(x)-0.25*acos(x)*((x+3*fabs(x-y)+pow(x, 2))/(fabs(x-y)*z+pow(x, 2)));
 
-    if (sum>9 && sum<100) {printf("Сумма цифр является двухзначным числом");}
-    else {printf("Сумма цифр НЕ является двухзначным числом");}
+    printf("Результат = %lf", gamma);
 
 }
