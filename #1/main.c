@@ -1,9 +1,9 @@
-﻿#include <locale.h>
+#include <locale.h>
 #include <stdio.h>
 
 void main() {
 
-	setlocale(LC_ALL, "RUS");
+    setlocale(LC_ALL, "RUS");
 
     puts("     _");
     puts("    //\\");
@@ -20,6 +20,6 @@ void main() {
     puts("                 `-.__  `----\"\"\"    __.-\'");
     puts("                      `--..____..--'");
 
-	getchar();
+    getchar();
 
 }
