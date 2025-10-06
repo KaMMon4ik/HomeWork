@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 
-// Âàðèàíò 7
+// Вариант 7
 
 void main() {
 
