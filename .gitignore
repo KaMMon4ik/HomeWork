@@ -3,6 +3,5 @@
 *.vcxproj.user
 *.vcxproj.filters
 
-/.vs
-
-x64
+.vs/
+x64/
