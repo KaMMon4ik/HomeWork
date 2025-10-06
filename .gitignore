@@ -55,9 +55,9 @@ dkms.conf
 *.dwo
 
 # Other
-*.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+*.vcxproj
 *.sln
 x64
 .vs
