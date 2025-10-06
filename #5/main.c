@@ -1,4 +1,4 @@
-#include <locale.h>
+﻿#include <locale.h>
 #include <stdio.h>
 #include <math.h>
 
@@ -10,15 +10,15 @@ void main() {
     
     double x, y, z, gamma;
 
-    printf("Ââåäèòå x\n");
+    printf("Введите x\n");
     scanf("%lf", &x);
-    printf("Ââåäèòå y\n");
+    printf("Введите y\n");
     scanf("%lf", &y);
-    printf("Ââåäèòå z\n");
+    printf("Введите z\n");
     scanf("%lf", &z);
 
     gamma=5*atan(x)-0.25*acos(x)*((x+3*fabs(x-y)+pow(x, 2))/(fabs(x-y)*z+pow(x, 2)));
 
-    printf("Ðåçóëüòàò = %lf", gamma);
+    printf("Результат = %lf", gamma);
 
 }
