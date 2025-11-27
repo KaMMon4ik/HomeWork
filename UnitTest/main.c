@@ -49,8 +49,6 @@ void main() {
     add_test("123.c", 3, add_test, add_test);
     printf("%s\n", tests[0].filename);
 
-    int var = Ћатышев_јрсений_б“»»_251_¬ариант();
-
     getchar();
 
 }

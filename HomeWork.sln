@@ -21,9 +21,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Указатели", "Ук�
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Помощь", "Помощь\Помощь.vcxproj", "{734BFF87-68E3-4931-9E19-81C9D7B96C1B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest #16", "UnitTest #16\UnitTest #16.vcxproj", "{DAE8593E-7C54-49E2-9694-772EDAE5EB48}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Generator", "Generator\Generator.vcxproj", "{DAE8593E-7C54-49E2-9694-772EDAE5EB48}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{F3A49160-78CF-4EF5-9232-8E681B56CC8E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "UnitTest\UnitTest.vcxproj", "{F3A49160-78CF-4EF5-9232-8E681B56CC8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
