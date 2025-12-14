@@ -1,54 +1,61 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#include "includes.h"
-#include "dirent.h"
+#include "test.h"
+
 #include <locale.h>
 #include <stdio.h>
-#include <string.h>
-#include <windows.h>
+#include <stdlib.h>
+#include <math.h>
 
-typedef struct {
-    char *filename;
-    int variant;
-    void (*function)();
-    void *result;
-} TestInfo;
+extern double *full_elements(double *ptr, int len) {
 
-TestInfo *tests;
-int cnt = 0;
+	double* ptr_new = ptr;
+	if (ptr_new == NULL || len <= 0) {return NULL;}
+	for (int i=0; i<len; ++i) {ptr_new[i]=pow(i+1, 2)+sin(5*(i+1));}
+	return ptr_new;
 
-void add_test(char* file_name, int variant, void* (*func)(), void *result) {
-    tests = realloc(tests, sizeof(TestInfo)*(++cnt+1));
-    tests[cnt-1].filename = file_name;
-    tests[cnt-1].variant = variant;
-    tests[cnt-1].function = func;
-    tests[cnt-1].result = result;
+}
+
+double *calc_elements(double *ptr, int len) {
+
+	double* ptr_new = ptr;
+	for (int i=0; i<len; ++i) {ptr_new[i]*=2;}
+	return ptr_new;
+
+}
+
+void put_elements(double* ptr, int len) {
+
+	for (int i = 0; i < len; ++i) { printf("%lf ", ptr[i]); }
+	printf("\n");
+
+}
+
+void task_1() {
+
+	double* ptr_array;
+	int len;
+	puts("¬ведите длину массива: ");
+	scanf("%d", &len);
+	ptr_array = (double*)malloc(len * sizeof(double));
+	if (ptr_array == NULL) {
+		puts("Error");
+		return -1;
+	}
+
+	full_elements(ptr_array, len);
+	put_elements(ptr_array, len);
+	ptr_array = calc_elements(ptr_array, len);
+	put_elements(ptr_array, len);
+
+	free(ptr_array);
+
 }
 
 void main() {
 
-    setlocale(LC_ALL, "RUS");
+	setlocale(LC_ALL, "RUS");
 
-    //DIR* programs = opendir("Programs");
-    //struct dirent* dir;
-
-    //char func_name[256];
-    //strncpy(func_name, dir->d_name, strlen(dir->d_name) - 2);
-    //strcat(func_name, "_¬ариант");
-    //void* (*func)() = dlsym
-    //    //function func_name(2, 3);
-    //    printf("%s\n", func_name);
-
-    //while ((dir = readdir(programs)) != NULL) {
-    //    if (strstr(dir->d_name, ".c")) {
-    //        add_test(dir->d_name, )
-    //    }
-    //}
-    //closedir(programs);
-
-    add_test("123.c", 3, add_test, add_test);
-    printf("%s\n", tests[0].filename);
-
-    getchar();
+	test_full_elements(full_elements);
 
 }
