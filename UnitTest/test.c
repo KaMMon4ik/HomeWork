@@ -1,4 +1,4 @@
-#include <stdio.h>
+п»ї#include <stdio.h>
 #include <Windows.h>
 #include <psapi.h>
 
@@ -12,11 +12,11 @@ void test_task_1(void (*func)()) {
 
 	process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
 	if (process == NULL) {
-		printf("Ошибка при получении хэндла процесса\n");
+		printf("РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё С…СЌРЅРґР»Р° РїСЂРѕС†РµСЃСЃР°\n");
 		return;
 	}
 
-	puts("Началось тестирование задания 1");
+	puts("РќР°С‡Р°Р»РѕСЃСЊ С‚РµСЃС‚РёСЂРѕРІР°РЅРёРµ Р·Р°РґР°РЅРёСЏ 1");
 
 	GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
 	unsigned int start_memory = pmc.PeakWorkingSetSize;
@@ -26,20 +26,20 @@ void test_task_1(void (*func)()) {
 	GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
 	unsigned int end_memory = pmc.PeakWorkingSetSize;
 
-	printf("Потрачено памяти: %u байт\n", (end_memory - start_memory) / 1024);
-	printf("Функция выполнялась: %f сек\n", (double) (end_time.QuadPart - start_time.QuadPart) / frequency.QuadPart / 1000);
+	printf("РџРѕС‚СЂР°С‡РµРЅРѕ РїР°РјСЏС‚Рё: %u Р±Р°Р№С‚\n", (end_memory - start_memory) / 1024);
+	printf("Р¤СѓРЅРєС†РёСЏ РІС‹РїРѕР»РЅСЏР»Р°СЃСЊ: %f СЃРµРє\n", (double) (end_time.QuadPart - start_time.QuadPart) / frequency.QuadPart / 1000);
 
 }
 
 void test_full_elements(double* (*func)(double *ptr, int len)) {
 
-	puts("Началось тестирование");
+	puts("РќР°С‡Р°Р»РѕСЃСЊ С‚РµСЃС‚РёСЂРѕРІР°РЅРёРµ");
 
 	double ptr_1[10];
 	double *result_1 = func(ptr_1, 10);
 
 	if (result_1 != NULL) {
-		printf("Первый тест прошёл\n");
+		printf("РџРµСЂРІС‹Р№ С‚РµСЃС‚ РїСЂРѕС€С‘Р»\n");
 		for (int i=0; i<10; ++i) {printf("%lf ", result_1[i]);}
 	}
 
