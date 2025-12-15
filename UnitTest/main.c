@@ -37,7 +37,7 @@ void task_1() {
 	int len;
 	puts("¬ведите длину массива: ");
 	scanf("%d", &len);
-	ptr_array = (double*)malloc(len * sizeof(double));
+	ptr_array = (double*) malloc(len * sizeof(double));
 	if (ptr_array == NULL) {
 		puts("Error");
 		return -1;
@@ -56,6 +56,6 @@ void main() {
 
 	setlocale(LC_ALL, "RUS");
 
-	test_full_elements(full_elements);
+	test_task_1(task_1);
 
 }

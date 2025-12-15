@@ -26,7 +26,7 @@ Point get_middle_point(Point z, Point w) {
 
 }
 
-void main() {
+void not_not_main() {
 
     setlocale(LC_ALL, "RUS");
 
