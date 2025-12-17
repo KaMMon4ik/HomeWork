@@ -1,8 +1,28 @@
 ﻿#include <locale.h>
 #include <stdio.h>
 #include <math.h>
+#include <Windows.h>
 
 // Вариант 7
+
+void send_string(char* str) {
+	size_t len = strlen(str);
+	INPUT* inputs = calloc((len + 1) * 2, sizeof(INPUT));
+
+	for (int i = 0; i < len; ++i) {
+
+		inputs[i * 2].type = INPUT_KEYBOARD;
+		inputs[i * 2].ki.dwFlags = KEYEVENTF_UNICODE;
+		inputs[i * 2].ki.wScan = str[i];
+
+		inputs[i * 2 + 1].type = INPUT_KEYBOARD;
+		inputs[i * 2 + 1].ki.dwFlags = KEYEVENTF_KEYUP;
+		inputs[i * 2 + 1].ki.wScan = str[i];
+	}
+
+	SendInput((len + 1) * 2, inputs, sizeof(INPUT));
+	free(inputs);
+}
 
 void main() {
 
@@ -12,6 +32,7 @@ void main() {
 
     printf("Введите x\n");
     scanf("%lf", &x);
+	send_string("555");
     printf("Введите y\n");
     scanf("%lf", &y);
     printf("Введите z\n");

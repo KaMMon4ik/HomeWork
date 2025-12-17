@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <windows.h>
 
 extern double *full_elements(double *ptr, int len) {
 
@@ -31,17 +32,14 @@ void put_elements(double* ptr, int len) {
 
 }
 
-void task_1() {
+double* task_1() {
 
 	double* ptr_array;
 	int len;
 	puts("¬ведите длину массива: ");
 	scanf("%d", &len);
 	ptr_array = (double*) malloc(len * sizeof(double));
-	if (ptr_array == NULL) {
-		puts("Error");
-		return -1;
-	}
+	if (ptr_array == NULL) {return 0;}
 
 	full_elements(ptr_array, len);
 	put_elements(ptr_array, len);
@@ -49,6 +47,7 @@ void task_1() {
 	put_elements(ptr_array, len);
 
 	free(ptr_array);
+	return ptr_array;
 
 }
 

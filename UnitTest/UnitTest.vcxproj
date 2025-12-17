@@ -127,7 +127,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\Downloads\задания.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="test.c" />
   </ItemGroup>
