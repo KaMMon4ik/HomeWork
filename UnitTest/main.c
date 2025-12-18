@@ -38,8 +38,8 @@ double* task_1() {
 	int len;
 	puts("¬ведите длину массива: ");
 	scanf("%d", &len);
-	ptr_array = (double*) malloc(len * sizeof(double));
-	if (ptr_array == NULL) {return 0;}
+	ptr_array = (double*) malloc(len*sizeof(double));
+	if (ptr_array==NULL) {return 0;}
 
 	full_elements(ptr_array, len);
 	put_elements(ptr_array, len);
@@ -47,6 +47,7 @@ double* task_1() {
 	put_elements(ptr_array, len);
 
 	free(ptr_array);
+
 	return ptr_array;
 
 }

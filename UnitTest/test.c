@@ -3,24 +3,32 @@
 #include <stdio.h>
 #include <windows.h>
 #include <psapi.h>
+#include <math.h>
+#include <setjmp.h>
+#include <stdbool.h>
+
+int TEST_CNT = 10;
+int MAX_CNT_INPUT = 100;
 
 void send_string(char* str) {
 	size_t len = strlen(str);
-	INPUT* inputs = calloc((len+1)*2, sizeof(INPUT));
-
-	for (int i=0; i<=len; ++i) {
-		inputs[i*2].type = INPUT_KEYBOARD;
-		inputs[i*2].ki.dwFlags = KEYEVENTF_UNICODE;
-		if (i==len) inputs[i*2].ki.wScan = VK_RETURN;
-		else inputs[i*2].ki.wScan = str[i];
-
-		inputs[i*2+1].type = INPUT_KEYBOARD;
-		inputs[i*2+1].ki.dwFlags = KEYEVENTF_KEYUP;
-		if (i==len) inputs[i*2+1].ki.wScan = VK_RETURN;
-		else inputs[i*2+1].ki.wScan = str[i];
+	INPUT* inputs = calloc(len+1, sizeof(INPUT));
+	if (inputs == NULL) {
+		puts("Ошибка выделения памяти при имитации нажатий клавиш");
+		return -1;
 	}
 
-	SendInput((len+1)*2, inputs, sizeof(INPUT));
+	for (int i=0; i<len; ++i) {
+		inputs[i].type = INPUT_KEYBOARD;
+		inputs[i].ki.dwFlags = KEYEVENTF_UNICODE;
+		inputs[i].ki.wScan = str[i];
+	}
+
+	inputs[len].type = INPUT_KEYBOARD;
+	inputs[len].ki.dwFlags = KEYEVENTF_UNICODE;
+	inputs[len].ki.wScan = VK_RETURN;
+
+	SendInput(len+1, inputs, sizeof(INPUT));
 	free(inputs);
 }
 
@@ -37,26 +45,46 @@ void test_task_1(double* (*func)()) {
 	puts("--------------------------------\n");
 	Sleep(1000);
 
-	char str[100];
-	int test_cnt = 75;
-	_itoa(test_cnt, str, 10);
+	double total_time = 0;
+	double total_cpu_time = 0;
+	int total_memory = 0;
+	bool free_check = false;
 
-	QueryPerformanceFrequency(&frequency);
-	GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
-	size_t start_memory = pmc.PeakWorkingSetSize;
-	QueryPerformanceCounter(&start_time);
-	send_string(str);
-	double* ans = func();
-	QueryPerformanceCounter(&end_time);
-	GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
-	size_t end_memory = pmc.PeakWorkingSetSize;
+	for (int i=0; i<TEST_CNT; ++i) {
+		
+		int test_cnt = rand() % MAX_CNT_INPUT + 1;
+		char test_str[4];
+		_itoa(test_cnt, test_str, 10);
 
-	elapsed_ms = (double) (end_time.QuadPart - start_time.QuadPart) / frequency.QuadPart;
+		QueryPerformanceFrequency(&frequency);
+		GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
+		size_t start_memory = pmc.PeakWorkingSetSize;
+		QueryPerformanceCounter(&start_time);
 
-	puts("\n--------------------------------\n");
+		send_string(test_str);
+		double* ans = func();
+
+		double* full = calloc(test_cnt, sizeof(double));
+		int cnt = 0;
+		for (int j=0; j<test_cnt; ++j) {
+			if (ans[j]==0) {cnt++;}
+		}
+		if (cnt==test_cnt) {free_check=true;}
+
+		QueryPerformanceCounter(&end_time);
+		GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
+		size_t end_memory = pmc.PeakWorkingSetSize;
+
+		total_memory += end_memory-start_memory;
+		total_time += (double) (end_time.QuadPart-start_time.QuadPart) / frequency.QuadPart;
+		puts("\n--------------------------------\n");
+
+	}
+
 	Sleep(1000);
-	printf("- Потрачено памяти: %u байт\n", (unsigned) (end_memory - start_memory) / 1024);
-	printf("- Функция выполнялась: %.3f сек\n", elapsed_ms);
+	printf("- Среднее количество потраченной памяти: %d байт\n", total_memory/TEST_CNT);
+	printf("- Среднее время выполнения функции: %.3f сек\n", total_time/TEST_CNT);
+	printf("- Выделенная память %sбыла освобождена\n", free_check==true ? "" : "НЕ ");
 
 }
 
