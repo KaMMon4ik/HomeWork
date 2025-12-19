@@ -46,15 +46,14 @@ void test_task_1(double* (*func)()) {
 	Sleep(1000);
 
 	double total_time = 0;
-	double total_cpu_time = 0;
 	int total_memory = 0;
 	bool free_check = false;
 
 	for (int i=0; i<TEST_CNT; ++i) {
 		
-		int test_cnt = rand() % MAX_CNT_INPUT + 1;
+		int test_len = rand() % MAX_CNT_INPUT + 1;
 		char test_str[4];
-		_itoa(test_cnt, test_str, 10);
+		_itoa(test_len, test_str, 10);
 
 		QueryPerformanceFrequency(&frequency);
 		GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
@@ -64,12 +63,12 @@ void test_task_1(double* (*func)()) {
 		send_string(test_str);
 		double* ans = func();
 
-		double* full = calloc(test_cnt, sizeof(double));
+		double* full = calloc(test_len, sizeof(double));
 		int cnt = 0;
-		for (int j=0; j<test_cnt; ++j) {
+		for (int j=0; j<test_len; ++j) {
 			if (ans[j]==0) {cnt++;}
 		}
-		if (cnt==test_cnt) {free_check=true;}
+		if (cnt==test_len) {free_check=true;}
 
 		QueryPerformanceCounter(&end_time);
 		GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
@@ -88,16 +87,63 @@ void test_task_1(double* (*func)()) {
 
 }
 
-void test_full_elements(double* (*func)(double *ptr, int len)) {
+void test_insert(double* (*func)(double* ptr, int len, int index, double val)) {
+	
+	HANDLE process;
+	PROCESS_MEMORY_COUNTERS pmc;
+	LARGE_INTEGER start_time, end_time, frequency;
+	double elapsed_ms;
 
-	puts("Началось тестирование");
+	process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
 
-	double ptr_1[10];
-	double *result_1 = func(ptr_1, 10);
+	puts("Началось тестирование вставки элемента в массив");
+	puts("-----------------------------------------------\n");
+	Sleep(1000);
 
-	if (result_1 != NULL) {
-		printf("Первый тест прошёл\n");
-		for (int i=0; i<10; ++i) {printf("%lf ", result_1[i]);}
+	double total_time = 0;
+	int total_memory = 0;
+	int errors = 0;
+
+	for (int i=0; i<TEST_CNT; ++i) {
+
+		int test_len = rand() % MAX_CNT_INPUT + 1;
+		int test_index = rand() % MAX_CNT_INPUT;
+		double test_val = (rand()%MAX_CNT_INPUT) / (rand()%MAX_CNT_INPUT);
+
+		QueryPerformanceFrequency(&frequency);
+		GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
+		size_t start_memory = pmc.PeakWorkingSetSize;
+		QueryPerformanceCounter(&start_time);
+
+		double* ptr = calloc(test_len, sizeof(double));
+		double* ans = func(ptr, test_len, test_index, test_val);
+
+		int cnt = 0;
+		for (int j=0; j<=test_len; ++j) {
+			if (ans[j]==0) {cnt++;}
+		}
+		if (cnt==test_len && ans[test_index]==test_val) {
+			errors+=1;
+			if (cnt==test_len) printf("- Ошибка: длина массива не увеличилась");
+			else printf("- Ошибка: элемент не был вставлен на данный индекс");
+		}
+
+		free(ptr);
+		free(ans);
+
+		QueryPerformanceCounter(&end_time);
+		GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
+		size_t end_memory = pmc.PeakWorkingSetSize;
+
+		total_memory += end_memory - start_memory;
+		total_time += (double)(end_time.QuadPart - start_time.QuadPart) / frequency.QuadPart;
+		puts("\n--------------------------------\n");
+
 	}
+
+	Sleep(1000);
+	printf("- Среднее количество потраченной памяти: %d байт\n", total_memory / TEST_CNT);
+	printf("- Среднее время выполнения функции: %.3f сек\n", total_time / TEST_CNT);
+	printf("- Ошибок при выполении тестов: %d\n", errors);
 
 }

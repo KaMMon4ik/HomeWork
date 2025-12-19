@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <windows.h>
 
 extern double *full_elements(double *ptr, int len) {
 
@@ -32,23 +31,60 @@ void put_elements(double* ptr, int len) {
 
 }
 
+//double* insert(double* ptr, int len, int index, double val) {
+//    // Проверяем корректность позиции
+//    if (position < 0 || position > size) {
+//        printf("Ошибка: неверная позиция для вставки\n");
+//        return arr;
+//    }
+//
+//    // Создаем новый массив на один элемент больше
+//    int* newArr = (int*)malloc((size + 1) * sizeof(int));
+//
+//    // Копируем элементы до позиции вставки
+//    for (int i = 0; i < position; i++) {
+//        newArr[i] = arr[i];
+//    }
+//
+//    // Вставляем новый элемент
+//    newArr[position] = element;
+//
+//    // Копируем оставшиеся элементы
+//    for (int i = position; i < size; i++) {
+//        newArr[i + 1] = arr[i];
+//    }
+//
+//    // Освобождаем память старого массива
+//    free(arr);
+//
+//    return newArr;
+//}
+
+int delete_k (double* ptr_arr, int size, int k) {
+
+    int n = size-1;
+	for (int i=k; i<(size-1); i++) ptr_arr[i] = ptr_arr[i+1];
+    return n;
+
+}
+
 double* task_1() {
 
-	double* ptr_array;
+	double* ptr;
 	int len;
 	puts("Введите длину массива: ");
 	scanf("%d", &len);
-	ptr_array = (double*) malloc(len*sizeof(double));
-	if (ptr_array==NULL) {return 0;}
+	ptr = (double*) malloc(len*sizeof(double));
+	if (ptr==NULL) {return 0;}
 
-	full_elements(ptr_array, len);
-	put_elements(ptr_array, len);
-	ptr_array = calc_elements(ptr_array, len);
-	put_elements(ptr_array, len);
+	full_elements(ptr, len);
+	put_elements(ptr, len);
+	ptr = calc_elements(ptr, len);
+	put_elements(ptr, len);
 
-	free(ptr_array);
+	free(ptr);
 
-	return ptr_array;
+	return ptr;
 
 }
 
@@ -56,6 +92,8 @@ void main() {
 
 	setlocale(LC_ALL, "RUS");
 
-	test_task_1(task_1);
+	//test_task_1(task_1);
+	
+	test_insert(in)
 
 }
