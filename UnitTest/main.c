@@ -26,45 +26,30 @@ double *calc_elements(double *ptr, int len) {
 
 void put_elements(double* ptr, int len) {
 
-	for (int i = 0; i < len; ++i) { printf("%lf ", ptr[i]); }
+	for (int i=0; i<len; ++i) {printf("%lf ", ptr[i]);}
 	printf("\n");
 
 }
 
-//double* insert(double* ptr, int len, int index, double val) {
-//    // Проверяем корректность позиции
-//    if (position < 0 || position > size) {
-//        printf("Ошибка: неверная позиция для вставки\n");
-//        return arr;
-//    }
-//
-//    // Создаем новый массив на один элемент больше
-//    int* newArr = (int*)malloc((size + 1) * sizeof(int));
-//
-//    // Копируем элементы до позиции вставки
-//    for (int i = 0; i < position; i++) {
-//        newArr[i] = arr[i];
-//    }
-//
-//    // Вставляем новый элемент
-//    newArr[position] = element;
-//
-//    // Копируем оставшиеся элементы
-//    for (int i = position; i < size; i++) {
-//        newArr[i + 1] = arr[i];
-//    }
-//
-//    // Освобождаем память старого массива
-//    free(arr);
-//
-//    return newArr;
-//}
+double* insert_element(double* ptr, int len, int index, double val) {
 
-int delete_k (double* ptr_arr, int size, int k) {
+    double* newPtr = malloc((len+1)*sizeof(double));
 
-    int n = size-1;
-	for (int i=k; i<(size-1); i++) ptr_arr[i] = ptr_arr[i+1];
-    return n;
+    for (int i=0; i<index; ++i) {newPtr[i] = ptr[i];}
+    newPtr[index] = val;
+    for (int i=index; i<len; ++i) {newPtr[i+1] = ptr[i];}
+
+    return newPtr;
+}
+
+double* delete_element(double* ptr, int len, int index) {
+
+	double* newPtr = malloc((len-1)*sizeof(double));
+
+	for (int i=0; i<index; ++i) {newPtr[i] = ptr[i];}
+	for (int i=index; i<(len-1); ++i) {newPtr[i] = ptr[i+1];}
+
+    return newPtr;
 
 }
 
@@ -94,6 +79,8 @@ void main() {
 
 	//test_task_1(task_1);
 	
-	test_insert(in)
+	test_insert_element(insert_element);
+
+	//test_delete_element(delete_element);
 
 }

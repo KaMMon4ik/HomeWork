@@ -37,7 +37,6 @@ void test_task_1(double* (*func)()) {
 	HANDLE process;
 	PROCESS_MEMORY_COUNTERS pmc;
 	LARGE_INTEGER start_time, end_time, frequency;
-	double elapsed_ms;
 
 	process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
 
@@ -49,8 +48,10 @@ void test_task_1(double* (*func)()) {
 	int total_memory = 0;
 	bool free_check = false;
 
+	srand(time(0));
+
 	for (int i=0; i<TEST_CNT; ++i) {
-		
+
 		int test_len = rand() % MAX_CNT_INPUT + 1;
 		char test_str[4];
 		_itoa(test_len, test_str, 10);
@@ -87,12 +88,11 @@ void test_task_1(double* (*func)()) {
 
 }
 
-void test_insert(double* (*func)(double* ptr, int len, int index, double val)) {
+void test_insert_element(double* (*func)(double* ptr, int len, int index, double val)) {
 	
 	HANDLE process;
 	PROCESS_MEMORY_COUNTERS pmc;
 	LARGE_INTEGER start_time, end_time, frequency;
-	double elapsed_ms;
 
 	process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
 
@@ -104,11 +104,15 @@ void test_insert(double* (*func)(double* ptr, int len, int index, double val)) {
 	int total_memory = 0;
 	int errors = 0;
 
+	srand(time(0));
+
 	for (int i=0; i<TEST_CNT; ++i) {
 
 		int test_len = rand() % MAX_CNT_INPUT + 1;
-		int test_index = rand() % MAX_CNT_INPUT;
-		double test_val = (rand()%MAX_CNT_INPUT) / (rand()%MAX_CNT_INPUT);
+		int test_index = rand() % test_len;
+		double test_val = (double) (rand()%(rand()+1)) / (rand()%(rand()+1)) - (rand()%(rand()+1)) + (rand()%(rand()+1));
+
+		printf("Тест #%d | Длина массива: %d | Индекс вставки: %d | Значение для вставки: %lf\n", i+1, test_len, test_index, test_val);
 
 		QueryPerformanceFrequency(&frequency);
 		GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
@@ -122,22 +126,88 @@ void test_insert(double* (*func)(double* ptr, int len, int index, double val)) {
 		for (int j=0; j<=test_len; ++j) {
 			if (ans[j]==0) {cnt++;}
 		}
-		if (cnt==test_len && ans[test_index]==test_val) {
+		if (cnt!=test_len || ans[test_index]!=test_val) {
 			errors+=1;
-			if (cnt==test_len) printf("- Ошибка: длина массива не увеличилась");
-			else printf("- Ошибка: элемент не был вставлен на данный индекс");
+			if (cnt!=test_len) printf("- Ошибка: длина массива не увеличилась\n");
+			else printf("- Ошибка: элемент не был вставлен на данный индекс\n");
 		}
-
-		free(ptr);
-		free(ans);
 
 		QueryPerformanceCounter(&end_time);
 		GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
 		size_t end_memory = pmc.PeakWorkingSetSize;
 
+		free(ptr);
+		free(ans);
+
+		total_memory += end_memory - start_memory;
+		total_time += (double) (end_time.QuadPart-start_time.QuadPart) / frequency.QuadPart;
+		puts("\n-----------------------------------------------\n");
+
+	}
+
+	Sleep(1000);
+	printf("- Среднее количество потраченной памяти: %d байт\n", total_memory / TEST_CNT);
+	printf("- Среднее время выполнения функции: %.3f сек\n", total_time / TEST_CNT);
+	printf("- Ошибок при выполении тестов: %d\n", errors);
+
+}
+
+void test_delete_element(double* (*func)(double* ptr, int len, int index)) {
+
+	HANDLE process;
+	PROCESS_MEMORY_COUNTERS pmc;
+	LARGE_INTEGER start_time, end_time, frequency;
+
+	process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
+
+	puts("Началось тестирование удаления элемента из массив");
+	puts("-------------------------------------------------\n");
+	Sleep(1000);
+
+	double total_time = 0;
+	int total_memory = 0;
+	int errors = 0;
+
+	srand(time(0));
+
+	for (int i=0; i<TEST_CNT; ++i) {
+
+		int test_len = rand() % MAX_CNT_INPUT + 1;
+		int test_index = rand() % test_len;
+
+		printf("Тест #%d | Длина массива: %d | Индекс удаления: %d\n", i+1, test_len, test_index);
+
+		QueryPerformanceFrequency(&frequency);
+		GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
+		size_t start_memory = pmc.PeakWorkingSetSize;
+		QueryPerformanceCounter(&start_time);
+
+		double* ptr = malloc(test_len*sizeof(double));
+		for (int j=0; j<test_len; ++j) {ptr[j] = (double) (rand()%(rand()+1)) / (rand()%(rand()+1)) - (rand()%(rand()+1)) + (rand()%(rand()+1));}
+		double* ans = func(ptr, test_len, test_index);
+
+		int cnt = 0;
+		for (int j=0; j<test_index; ++j) {
+			if (ans[j]==ptr[j]) {cnt++;}
+		}
+		for (int j=test_index; j<test_len-1; ++j) {
+			if (ans[j]==ptr[j+1]) {cnt++;}
+		}
+		if (cnt!=test_len-1) {
+			errors += 1;
+			printf("- Ошибка: элемент не был удален %d\n", cnt);
+		}
+
+		QueryPerformanceCounter(&end_time);
+		GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
+		size_t end_memory = pmc.PeakWorkingSetSize;
+
+		free(ptr);
+		free(ans);
+
 		total_memory += end_memory - start_memory;
 		total_time += (double)(end_time.QuadPart - start_time.QuadPart) / frequency.QuadPart;
-		puts("\n--------------------------------\n");
+		puts("\n-------------------------------------------------\n");
 
 	}
 
