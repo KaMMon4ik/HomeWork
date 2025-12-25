@@ -18,12 +18,9 @@
     <ClCompile Include="main.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="test.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="test.h">
+    <ClInclude Include="..\..\UnitTestLib\test.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>
