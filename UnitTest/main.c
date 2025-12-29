@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <memory.h>
 
 double* full_elements(double* ptr, int len) {
 
@@ -70,6 +71,32 @@ double* delete_element(double* ptr, int len, int index) {
 
 }
 
+int comparator(double* a, double* b) {return *a - *b;}
+
+double* sort_array(double* ptr, int len) {
+
+	if (ptr==NULL || len<=0) return NULL;
+	double* new_ptr = malloc(len*sizeof(double));
+	if (new_ptr==NULL ) return NULL;
+
+	memcpy(new_ptr, ptr, len*sizeof(double));
+	
+	qsort(new_ptr, len, sizeof(double), comparator);
+	return new_ptr;
+
+}
+
+double sum_elements(double* ptr, int len, int begin, int end) {
+
+	if (ptr==NULL || len<=0 || begin<0 || begin>=len || end<0 || end>=len || begin>end) return 0;
+
+	double sum = 0;
+	for (int i=begin; i<=end; ++i) sum += ptr[i];
+
+	return sum;
+
+}
+
 double* task_1() {
 
 	double* ptr;
@@ -98,10 +125,14 @@ void main() {
 
 	setlocale(LC_ALL, "RUS");
 
-	//test_task_1(task_1);
+	test_task_1(task_1);
 	
 	//test_insert_element(insert_element);
 
 	//test_delete_element(delete_element);
+
+	//test_sort_array(sort_array);
+
+	//test_sum_elements(sum_elements);
 
 }
