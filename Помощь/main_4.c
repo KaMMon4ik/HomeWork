@@ -156,7 +156,7 @@ void menu() {
     printf("Выбор: ");
 }
 
-void main() {
+void n_main() {
 
     system("chcp 1251 > nul");
     srand(time(0));

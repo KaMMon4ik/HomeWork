@@ -71,7 +71,11 @@ double* delete_element(double* ptr, int len, int index) {
 
 }
 
-int comparator(double* a, double* b) {return *a - *b;}
+int comparator(double* a, double* b) {
+	if (*a<*b) return -1;
+	if (*a>*b) return 1;
+	return 0;
+}
 
 double* sort_array(double* ptr, int len) {
 
@@ -94,6 +98,22 @@ double sum_elements(double* ptr, int len, int begin, int end) {
 	for (int i=begin; i<=end; ++i) sum += ptr[i];
 
 	return sum;
+
+}
+
+int find_element(double* ptr, int len, double val) {
+
+	if (ptr==NULL || len<=0) return -1;
+
+	int index = -1;
+	for (int i=0; i<len; ++i) {
+		if (ptr[i]==val) {
+			index = i;
+			break;
+		}
+	}
+
+	return index;
 
 }
 
@@ -125,7 +145,7 @@ void main() {
 
 	setlocale(LC_ALL, "RUS");
 
-	test_task_1(task_1);
+	//test_task_1(task_1);
 	
 	//test_insert_element(insert_element);
 
@@ -134,5 +154,7 @@ void main() {
 	//test_sort_array(sort_array);
 
 	//test_sum_elements(sum_elements);
+
+	//test_find_element(find_element);
 
 }
