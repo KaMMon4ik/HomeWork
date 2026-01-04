@@ -5,14 +5,15 @@
 #include <psapi.h>
 #include <math.h>
 #include <stdbool.h>
+#include <time.h>
 
-int TEST_CNT = 10;
-int MAX_LEN = 1000;
+int TEST_CNT = 100;
+int MAX_LEN = 100;
 
 void send_string(char* str) {
 	size_t len = strlen(str);
 	INPUT* inputs = calloc(len+1, sizeof(INPUT));
-	if (inputs==NULL) return NULL;
+	if (inputs==NULL) return;
 
 	for (int i=0; i<len; ++i) {
 		inputs[i].type = INPUT_KEYBOARD;
@@ -36,7 +37,7 @@ void test_task_1(double* (*func)()) {
 
 	process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
 
-	puts("Началось тестирование задания #1");
+	puts("Началось тестирование задания #1 из работы #16");
 	puts("В случае ошибки проверьте требования к функции из README");
 	puts("--------------------------------------------------------\n");
 	Sleep(1500);
@@ -89,7 +90,7 @@ void test_task_1(double* (*func)()) {
 
 		puts("\n--------------------------------------------------------\n");
 
-		total_memory += end_memory-start_memory;
+		total_memory += end_memory - start_memory;
 		total_time += (double) (end_time.QuadPart-start_time.QuadPart) / frequency.QuadPart;
 
 	}
@@ -125,7 +126,10 @@ void test_insert_element(double* (*func)(double* ptr, int len, int index, double
 
 		int test_len = (rand()%MAX_LEN+1) * (rand()%3-1);
 		int test_index = (rand()%max(test_len, 1)) - (rand()%max(test_len, 1)) + (rand()%max(test_len, 1));
-		double test_val = (double) (rand()%(rand()+1)) / (rand()%(rand()+1)) - (rand()%(rand()+1)) + (rand()%(rand()+1));
+		double test_val = (double) (rand()%(rand()+1)) / (rand()%(rand()+1)+1) - (rand()%(rand()+1)) + (rand()%(rand()+1));
+
+		double* ptr = calloc(test_len, sizeof(double));
+		if (rand()%10==0) ptr = NULL;
 
 		printf("- Тест #%d | Длина массива: %d | Индекс вставки: %d | Значение для вставки: %lf\n", i+1, test_len, test_index, test_val);
 
@@ -134,9 +138,6 @@ void test_insert_element(double* (*func)(double* ptr, int len, int index, double
 		size_t start_memory = pmc.PeakWorkingSetSize;
 		QueryPerformanceCounter(&start_time);
 
-		double* ptr;
-		if (rand()%5==0) ptr = NULL;
-		else ptr = calloc(test_len, sizeof(double));
 		double* ans = func(ptr, test_len, test_index, test_val);
 
 		if (ans==NULL) {
@@ -150,13 +151,15 @@ void test_insert_element(double* (*func)(double* ptr, int len, int index, double
 				errors++;
 				puts("- Ошибка: не был возвращен NULL");
 			}
-			if (ans[test_index]!=test_val) {
-				errors++;
-				puts("- Ошибка: элемент не был вставлен на данный индекс");
-			}
-			if (_msize(ans)/sizeof(double)!=test_len+1) {
-				errors++;
-				puts("- Ошибка: длина массива не увеличилась");
+			else {
+				if (ans[test_index]!=test_val) {
+					errors++;
+					puts("- Ошибка: элемент не был вставлен на данный индекс");
+				}
+				if (_msize(ans)/sizeof(double)!=test_len+1) {
+					errors++;
+					puts("- Ошибка: длина массива не увеличилась");
+				}
 			}
 		}
 
@@ -170,6 +173,7 @@ void test_insert_element(double* (*func)(double* ptr, int len, int index, double
 		free(ans);
 
 		total_memory += end_memory - start_memory;
+		total_time += (double) (end_time.QuadPart-start_time.QuadPart) / frequency.QuadPart;
 
 	}
 
@@ -204,6 +208,12 @@ void test_delete_element(double* (*func)(double* ptr, int len, int index)) {
 		int test_len = (rand()%MAX_LEN+1) * (rand()%3-1);
 		int test_index = (rand()%max(test_len, 1)) - (rand()%max(test_len, 1)) + (rand()%max(test_len, 1));
 
+		double* ptr = malloc(test_len*sizeof(double));
+		if (rand()%10==0) ptr = NULL;
+		if (test_len>0 && ptr!=NULL) {
+			for (int j=0; j<test_len; ++j) ptr[j] = (double) (rand()%(rand()+1)) / (rand()%(rand()+1)+1) - (rand()%(rand()+1)) + (rand()%(rand()+1));
+		}
+
 		printf("- Тест #%d | Длина массива: %d | Индекс удаления: %d\n", i+1, test_len, test_index);
 
 		QueryPerformanceFrequency(&frequency);
@@ -211,11 +221,6 @@ void test_delete_element(double* (*func)(double* ptr, int len, int index)) {
 		size_t start_memory = pmc.PeakWorkingSetSize;
 		QueryPerformanceCounter(&start_time);
 
-		double* ptr = malloc(test_len*sizeof(double));
-		if (rand()%5==0) ptr = NULL;
-		else {
-			for (int j=0; j<test_len; ++j) ptr[j] = (double) (rand()%(rand()+1)) / (rand()%(rand()+1)) - (rand()%(rand()+1)) + (rand()%(rand()+1));
-		}
 		double* ans = func(ptr, test_len, test_index);
 
 		if (ans==NULL) {
@@ -229,13 +234,15 @@ void test_delete_element(double* (*func)(double* ptr, int len, int index)) {
 				errors++;
 				puts("- Ошибка: не был возвращен NULL");
 			}
-			if (ans[test_index]==ptr[test_index]) {
-				errors++;
-				puts("- Ошибка: элемент не был удален из массива");
-			}
-			if (_msize(ans)/sizeof(double)!=test_len-1) {
-				errors++;
-				puts("- Ошибка: длина массива не увеличилась");
+			else {
+				if (ans[test_index]==ptr[test_index]) {
+					errors++;
+					puts("- Ошибка: элемент не был удален из массива");
+				}
+				if (_msize(ans)/sizeof(double)!=test_len-1) {
+					errors++;
+					puts("- Ошибка: длина массива не увеличилась");
+				}
 			}
 		}
 
@@ -249,7 +256,7 @@ void test_delete_element(double* (*func)(double* ptr, int len, int index)) {
 		free(ans);
 
 		total_memory += end_memory - start_memory;
-		total_time += (double)(end_time.QuadPart - start_time.QuadPart) / frequency.QuadPart;
+		total_time += (double) (end_time.QuadPart-start_time.QuadPart) / frequency.QuadPart;
 
 	}
 
@@ -283,6 +290,12 @@ void test_sort_array(double* (*func)(double* ptr, int len)) {
 
 		int test_len = (rand()%MAX_LEN+1) * (rand()%3-1);
 
+		double* ptr = malloc(test_len*sizeof(double));
+		if (rand()%10==0) ptr = NULL;
+		if (test_len>0 && ptr!=NULL) {
+			for (int j=0; j<test_len; ++j) ptr[j] = (double) (rand()%(rand()+1)) / (rand()%(rand()+1)+1) - (rand()%(rand()+1)) + (rand()%(rand()+1));
+		}
+
 		printf("- Тест #%d | Длина массива: %d\n", i+1, test_len);
 
 		QueryPerformanceFrequency(&frequency);
@@ -290,11 +303,6 @@ void test_sort_array(double* (*func)(double* ptr, int len)) {
 		size_t start_memory = pmc.PeakWorkingSetSize;
 		QueryPerformanceCounter(&start_time);
 
-		double* ptr = malloc(test_len*sizeof(double));
-		if (rand()%5==0) ptr = NULL;
-		else {
-			for (int j=0; j<test_len; ++j) ptr[j] = (double) (rand()%(rand()+1)) / (rand()%(rand()+1)) - (rand()%(rand()+1)) + (rand()%(rand()+1));
-		}
 		double* ans = func(ptr, test_len);
 
 		if (ans==NULL) {
@@ -308,20 +316,22 @@ void test_sort_array(double* (*func)(double* ptr, int len)) {
 				errors++;
 				puts("- Ошибка: не был возвращен NULL");
 			}
-			bool sort_check = true;
-			for (int j=0; j<test_len-1; ++j) {
-				if (ans[j]>ans[j+1]) {
-					sort_check = false;
-					break;
+			else {
+				bool sort_check = true;
+				for (int j=0; j<test_len-1; ++j) {
+					if (ans[j]>ans[j+1]) {
+						sort_check = false;
+						break;
+					}
 				}
-			}
-			if (!sort_check) {
-				errors++;
-				puts("- Ошибка: массив не был отсортирован от меньшего к большему");
-			}
-			if (ptr==ans) {
-				errors++;
-				puts("- Ошибка: возвращенный указатель равняется переданному");
+				if (!sort_check) {
+					errors++;
+					puts("- Ошибка: массив не был отсортирован от меньшего к большему");
+				}
+				if (ptr==ans) {
+					errors++;
+					puts("- Ошибка: возвращенный указатель равняется переданному");
+				}
 			}
 		}
 
@@ -335,7 +345,7 @@ void test_sort_array(double* (*func)(double* ptr, int len)) {
 		free(ans);
 
 		total_memory += end_memory - start_memory;
-		total_time += (double)(end_time.QuadPart - start_time.QuadPart) / frequency.QuadPart;
+		total_time += (double) (end_time.QuadPart-start_time.QuadPart) / frequency.QuadPart;
 
 	}
 
@@ -365,20 +375,24 @@ void test_sum_elements(double (*func)(double* ptr, int len, int begin, int end))
 
 	srand(time(0));
 
-	int test_len = MAX_LEN - rand() % (MAX_LEN/10);
+	int test_len = MAX_LEN - (rand()%(MAX_LEN/10+1));
 
 	double* ptr = malloc(test_len*sizeof(double));
 	if (rand()%10==0) ptr = NULL;
-	else {
+	if (test_len>0 && ptr!=NULL) {
 		for (int i=0; i<test_len; ++i) ptr[i] = (double) (rand()/(rand()+1.0)) - (rand()/(rand()+1.0));
 	}
 
-	// Нахождение суммы через префиксую сумму
+	// - Нахождение суммы через префиксую сумму -
 
 	double* sum = malloc((test_len+1)*sizeof(double));
-	if (ptr!=NULL) {
+	if (sum==NULL) return;
+
+	if (test_len>0 && ptr!=NULL) {
 		for (int i=0; i<test_len; ++i) sum[i+1] = sum[i] + ptr[i];
 	}
+
+	// ------------------------------------------
 
 	for (int i=0; i<TEST_CNT; ++i) {
 
@@ -405,7 +419,7 @@ void test_sum_elements(double (*func)(double* ptr, int len, int begin, int end))
 				errors++;
 				puts("- Ошибка: не был возвращен 0");
 			}
-			if (fabs(ans-sum[test_end+1]-sum[test_begin])<0.1) {
+			else if (fabs(ans-(sum[test_end+1]-sum[test_begin]))>0.1) {
 				errors++;
 				printf("- Ошибка: неверный результат | Результат функции: %lf | Правильный результат: %lf\n", ans, sum[test_end+1]-sum[test_begin]);
 			}
@@ -424,6 +438,83 @@ void test_sum_elements(double (*func)(double* ptr, int len, int begin, int end))
 
 	free(ptr);
 	free(sum);
+
+	Sleep(1000);
+	printf("- Среднее количество потраченной памяти: %d байт\n", total_memory / TEST_CNT);
+	printf("- Среднее время выполнения функции: %.3f сек\n", total_time / TEST_CNT);
+	printf("- Ошибок при выполении тестов: %d\n", errors);
+
+}
+
+void test_find_element(int (*func)(double* ptr, int len, double val)) {
+
+	HANDLE process;
+	PROCESS_MEMORY_COUNTERS pmc;
+	LARGE_INTEGER start_time, end_time, frequency;
+
+	process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
+
+	puts("Началось тестирование поиска элемента в массиве");
+	puts("В случае ошибки проверьте требования к функции из README");
+	puts("--------------------------------------------------------\n");
+	Sleep(1500);
+
+	double total_time = 0;
+	int total_memory = 0;
+	int errors = 0;
+
+	srand(time(0));
+
+	for (int i=0; i<TEST_CNT; ++i) {
+
+		int test_len = (rand()%MAX_LEN+1) * (rand()%3-1);
+		int test_index = -1;
+
+		double* ptr = malloc(test_len*sizeof(double));
+		if (rand()%10==0) ptr = NULL;
+		if (test_len>0 && ptr!=NULL) {
+			for (int j=0; j<test_len; ++j) ptr[j] = (double) (rand()%(rand()+1)) / (rand()%(rand()+1)+1) - (rand()%(rand()+1)) + (rand()%(rand()+1));
+			if (rand()%2==0) test_index = rand() % test_len;
+		}
+
+		printf("- Тест #%d | Длина массива: %d | Элемент: %lf\n", i+1, test_len, test_index==-1 ? 0 : ptr[test_index]);
+
+		QueryPerformanceFrequency(&frequency);
+		GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
+		size_t start_memory = pmc.PeakWorkingSetSize;
+		QueryPerformanceCounter(&start_time);
+
+		int ans = func(ptr, test_len, test_index==-1 ? 0 : ptr[test_index]);
+
+		if (ans==-1) {
+			if (test_len>0 && test_index>=0 && ptr!=NULL) {
+				errors++;
+				puts("- Ошибка: был возращен NULL, ожидался указатель");
+			}
+		}
+		else {
+			if (test_len<=0 || test_index==-1 || ptr==NULL) {
+				errors++;
+				puts("- Ошибка: не был возвращен NULL");
+			}
+			else if (ptr[ans]!=ptr[test_index]) {
+				errors++;
+				puts("- Ошибка: возращен неверный индекс");
+			}
+		}
+
+		QueryPerformanceCounter(&end_time);
+		GetProcessMemoryInfo(process, &pmc, sizeof(pmc));
+		size_t end_memory = pmc.PeakWorkingSetSize;
+
+		puts("\n--------------------------------------------------------\n");
+
+		free(ptr);
+
+		total_memory += end_memory - start_memory;
+		total_time += (double) (end_time.QuadPart-start_time.QuadPart) / frequency.QuadPart;
+
+	}
 
 	Sleep(1000);
 	printf("- Среднее количество потраченной памяти: %d байт\n", total_memory / TEST_CNT);

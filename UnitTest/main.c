@@ -153,7 +153,7 @@ void main() {
 
 	//test_sort_array(sort_array);
 
-	//test_sum_elements(sum_elements);
+	test_sum_elements(sum_elements);
 
 	//test_find_element(find_element);
 
